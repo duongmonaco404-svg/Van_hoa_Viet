@@ -96,6 +96,50 @@
   .section{padding:88px 0;}
   .section:nth-of-type(odd){background:var(--bg-soft);}
 
+  /* ---------- View switching (game hub) ---------- */
+  .view{display:none;}
+  .view.active{display:block;}
+  .back-btn{
+    display:inline-flex; align-items:center; gap:6px; background:transparent; border:none;
+    color:var(--ink-soft); font-weight:600; font-size:.86rem; padding:0; margin-bottom:22px;
+  }
+  .back-btn:hover{color:var(--lacquer);}
+
+  /* ---------- Hub / game selection grid ---------- */
+  .hub-grid-section{padding:72px 0 96px;}
+  .hub-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:22px;
+  }
+  .game-card{
+    position:relative; border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; transition:transform .18s ease, box-shadow .18s ease;
+    border:1px solid rgba(33,29,23,.06);
+  }
+  .game-card:hover, .game-card:focus-visible{transform:translateY(-6px); box-shadow:0 20px 40px rgba(28,24,15,.24);}
+  .tile-thumb{
+    height:130px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(155deg, var(--tile-a), var(--tile-b));
+    position:relative;
+  }
+  .tile-thumb::after{
+    content:""; position:absolute; inset:0;
+    background:repeating-conic-gradient(from 0deg, rgba(255,255,255,.08) 0deg 4deg, transparent 4deg 16deg);
+  }
+  .tile-icon{font-size:2.6rem; position:relative; z-index:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));}
+  .tile-info{padding:16px 18px 6px; background:var(--paper); flex:1;}
+  .tile-tag{
+    font-family:var(--font-mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--lacquer); font-weight:700;
+  }
+  .tile-info h3{font-size:1.08rem; margin:6px 0 4px;}
+  .tile-meta{font-size:.82rem; color:var(--ink-soft);}
+  .tile-play{
+    margin:14px 18px 18px; background:var(--ink); color:var(--paper); border:none; border-radius:999px;
+    padding:10px 0; font-weight:700; font-size:.86rem; letter-spacing:.02em; transition:background .15s;
+  }
+  .game-card:hover .tile-play{background:var(--lacquer);}
+
+
   /* ---------- Hero ---------- */
   .hero{
     background:radial-gradient(120% 140% at 82% 15%, var(--indigo-soft) 0%, var(--indigo) 55%, #141a2b 100%);
@@ -245,11 +289,7 @@
   <div class="header-inner">
     <div class="logo"><span class="logo-mark" aria-hidden="true"></span> HỒN VIỆT</div>
     <nav class="main-nav" id="mainNav">
-      <a href="#home">Trang chủ</a>
-      <a href="#quiz">Văn học Quiz</a>
-      <a href="#works">Tác phẩm</a>
-      <a href="#history">Đoán danh nhân</a>
-      <a href="#podcast">Podcast</a>
+      <a href="#" id="homeNavBtn" class="active" onclick="showView('hub');return false;">🏠 Chọn trò chơi</a>
     </nav>
     <div class="score-badge">🏮 <span id="scoreDisplay">0</span> điểm</div>
   </div>
@@ -257,8 +297,10 @@
 
 <main>
 
+<div class="view active" id="view-hub">
+
   <!-- HERO -->
-  <section class="hero" id="home">
+  <section class="hero">
     <div class="container hero-grid">
       <div>
         <span class="hero-tag">Web app · minigame văn hóa</span>
@@ -270,8 +312,8 @@
           <span class="pillar-tag">Di sản</span>
           <span class="pillar-tag">Bản sắc dân tộc</span>
         </div>
-        <a href="#quiz" class="btn btn-primary">Bắt đầu khám phá →</a>
-        <a href="#podcast" class="btn btn-outline" style="margin-left:10px;">Nghe podcast</a>
+        <a href="#gameGrid" class="btn btn-primary">Chọn trò chơi ↓</a>
+        <a href="#" class="btn btn-outline" style="margin-left:10px;" onclick="showView('podcast');return false;">Nghe podcast</a>
       </div>
       <div class="drum-wrap">
         <div class="drum" aria-hidden="true"><div class="drum-star"></div></div>
@@ -279,9 +321,64 @@
     </div>
   </section>
 
-  <!-- QUIZ -->
-  <section class="section" id="quiz">
+  <!-- GAME SELECTION GRID -->
+  <section class="hub-grid-section" id="gameGrid">
     <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Chọn trò chơi</span>
+        <h2>4 trải nghiệm đang chờ bạn</h2>
+        <p>Chạm vào một tấm thẻ để bắt đầu chơi. Điểm số của bạn được cộng dồn ở góc trên bên phải.</p>
+      </div>
+      <div class="hub-grid">
+        <div class="game-card" data-view="quiz" tabindex="0" role="button" aria-label="Chơi Văn học Quiz" style="--tile-a:var(--lacquer);--tile-b:var(--lacquer-dark);">
+          <div class="tile-thumb"><span class="tile-icon">📖</span></div>
+          <div class="tile-info">
+            <span class="tile-tag">Trắc nghiệm</span>
+            <h3>Văn học Quiz</h3>
+            <p class="tile-meta">10 câu hỏi · tác giả &amp; tác phẩm</p>
+          </div>
+          <button class="tile-play">Chơi ▶</button>
+        </div>
+
+        <div class="game-card" data-view="history" tabindex="0" role="button" aria-label="Chơi Đoán danh nhân lịch sử" style="--tile-a:var(--indigo-soft);--tile-b:var(--indigo);">
+          <div class="tile-thumb"><span class="tile-icon">🛡️</span></div>
+          <div class="tile-info">
+            <span class="tile-tag">Đoán từ</span>
+            <h3>Đoán danh nhân lịch sử</h3>
+            <p class="tile-meta">8 nhân vật · qua từng chiến tích</p>
+          </div>
+          <button class="tile-play">Chơi ▶</button>
+        </div>
+
+        <div class="game-card" data-view="works" tabindex="0" role="button" aria-label="Khám phá Tác phẩm tiêu biểu" style="--tile-a:var(--gold-soft);--tile-b:var(--gold);">
+          <div class="tile-thumb"><span class="tile-icon">🎴</span></div>
+          <div class="tile-info">
+            <span class="tile-tag">Thẻ bài</span>
+            <h3>Tác phẩm tiêu biểu</h3>
+            <p class="tile-meta">6 thẻ lật · thư viện văn học</p>
+          </div>
+          <button class="tile-play">Chơi ▶</button>
+        </div>
+
+        <div class="game-card" data-view="podcast" tabindex="0" role="button" aria-label="Nghe Podcast văn hóa" style="--tile-a:var(--jade);--tile-b:#1F3F32;">
+          <div class="tile-thumb"><span class="tile-icon">🎙️</span></div>
+          <div class="tile-info">
+            <span class="tile-tag">Nghe &amp; đọc</span>
+            <h3>Podcast văn hóa</h3>
+            <p class="tile-meta">5 tập · tóm tắt nội dung</p>
+          </div>
+          <button class="tile-play">Mở ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+  <!-- QUIZ -->
+  <section class="section view" id="view-quiz">
+    <div class="container">
+      <button class="back-btn" onclick="showView('hub')">← Quay lại chọn game</button>
       <div class="section-head">
         <span class="eyebrow">Mục 01 · Trò chơi</span>
         <h2>Tìm hiểu Văn học Việt Nam</h2>
@@ -312,8 +409,9 @@
   </section>
 
   <!-- WORKS GALLERY -->
-  <section class="section" id="works">
+  <section class="section view" id="view-works">
     <div class="container">
+      <button class="back-btn" onclick="showView('hub')">← Quay lại chọn game</button>
       <div class="section-head">
         <span class="eyebrow">Mục 02 · Thư viện</span>
         <h2>Tác phẩm tiêu biểu</h2>
@@ -324,8 +422,9 @@
   </section>
 
   <!-- HISTORY GAME -->
-  <section class="section" id="history">
+  <section class="section view" id="view-history">
     <div class="container">
+      <button class="back-btn" onclick="showView('hub')">← Quay lại chọn game</button>
       <div class="section-head">
         <span class="eyebrow">Mục 03 · Trò chơi</span>
         <h2>Đoán danh nhân lịch sử qua chiến tích</h2>
@@ -359,8 +458,9 @@
   </section>
 
   <!-- PODCAST -->
-  <section class="section" id="podcast">
+  <section class="section view" id="view-podcast">
     <div class="container">
+      <button class="back-btn" onclick="showView('hub')">← Quay lại chọn game</button>
       <div class="section-head">
         <span class="eyebrow">Mục 04 · Podcast</span>
         <h2>Góc podcast văn hóa</h2>
@@ -391,17 +491,18 @@ function stripAccents(str){
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toLowerCase().trim();
 }
 
-/* ---------------- Nav active state ---------------- */
-const navLinks = document.querySelectorAll('#mainNav a');
-const sections = ['home','quiz','works','history','podcast'].map(id=>document.getElementById(id));
-const io = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      navLinks.forEach(l=>l.classList.toggle('active', l.getAttribute('href')==='#'+e.target.id));
-    }
-  });
-},{rootMargin:'-40% 0px -50% 0px'});
-sections.forEach(s=>io.observe(s));
+/* ---------------- Game hub / view switcher ---------------- */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('homeNavBtn').classList.toggle('active', id==='hub');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.game-card').forEach(card=>{
+  const open = ()=>showView(card.dataset.view);
+  card.addEventListener('click', open);
+  card.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); open(); } });
+});
 
 /* ================= QUIZ ================= */
 const quizData = [
